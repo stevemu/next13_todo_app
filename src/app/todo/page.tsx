@@ -14,7 +14,14 @@ export default function Home() {
     'use server'
     const desc = data.get('desc')?.toString() || ''
     todoController.saveTodo(desc);
-    revalidatePath('/')
+    revalidatePath('/todo')
+  }
+
+  async function deleteTodo(data: FormData) {
+    'use server'
+    const id = data.get('id')?.toString() || ''
+    todoController.deleteTodo(Number(id));
+    revalidatePath('/todo')
   }
 
   const todos = todoPresenter.getTodos();
@@ -25,7 +32,7 @@ export default function Home() {
       <ul>
         {todos.map(todo => {
           return <li key={todo.id}>
-            {todo.desc}
+            {todo.desc} <form action={deleteTodo}><input name="id" value={todo.id} hidden /><button>delete</button></form>
           </li>
         })}
       </ul>

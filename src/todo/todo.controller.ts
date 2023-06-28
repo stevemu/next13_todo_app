@@ -7,5 +7,9 @@ export class TodoController {
     const todo = this.todoUseCaseInputPort.addTodo(desc)
     return todo;
   }
+
+  async deleteTodo(id: number) {
+    this.todoUseCaseInputPort.deleteTodo(id)
+  }
 }
 
