@@ -5,8 +5,9 @@ import { TodoController } from '@/todo/todo.controller';
 import { TodoPresenter } from '@/todo/todo.presenter';
 import { revalidatePath } from 'next/cache'
 import { Todo } from '@/todo/todo.entity';
+import { TodoFilePersistence } from '@/todo/todo.persistence';
 
-const todoUseCaseInteractor = new TodoUseCaseInteractor();
+const todoUseCaseInteractor = new TodoUseCaseInteractor(new TodoFilePersistence());
 const todoController = new TodoController(todoUseCaseInteractor);
 const todoPresenter = new TodoPresenter(todoUseCaseInteractor);
 
