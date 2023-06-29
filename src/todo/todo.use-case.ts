@@ -1,12 +1,12 @@
 import {Todo} from './todo.entity';
 
 export interface TodoUseCaseOutputPort {
-  getAllTodos: () => Todo[]
+  getAllTodos: () => Promise<Todo[]>
 }
 
 export interface TodoUseCaseInputPort {
-  addTodo: (desc: string) => void;
-  deleteTodo: (id: number) => void;
+  addTodo: (desc: string) => Promise<Todo>;
+  deleteTodo: (id: number) => Promise<void>;
 }
 
 export interface ITodoPersistence {
@@ -15,28 +15,25 @@ export interface ITodoPersistence {
 }
 
 export class TodoUseCaseInteractor implements TodoUseCaseInputPort, TodoUseCaseOutputPort {
-  private todos: Todo[] = [];
+  constructor(private todoPersistence: ITodoPersistence) {}
 
-  constructor(private todoPersistence: ITodoPersistence) {
-    this.todoPersistence.getTodos().then(todos => {
-      this.todos = todos;
-    })
-  }
-
-  addTodo(desc: string) {
+  async addTodo(desc: string) {
     const todo = new Todo(Math.random(), desc);
-    this.todos = [...this.todos, todo];
-    this.todoPersistence.storeTodos(this.todos);
+    const existingTodos = await this.todoPersistence.getTodos();
+    const todos = [...existingTodos, todo];
+    await this.todoPersistence.storeTodos(todos);
     return todo;
   }
 
-  deleteTodo(id: number) {
-    this.todos = this.todos.filter(todo => todo.id !== id)
-    this.todoPersistence.storeTodos(this.todos);
+  async deleteTodo(id: number) {
+    const existingTodos = await this.todoPersistence.getTodos();
+    const todos = existingTodos.filter(todo => todo.id !== id)
+    await this.todoPersistence.storeTodos(todos);
   }
 
-  getAllTodos() {
-    return this.todos;
+  async getAllTodos() {
+    const existingTodos = await this.todoPersistence.getTodos();
+    return existingTodos;
   }
 }
 

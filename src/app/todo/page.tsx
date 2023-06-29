@@ -1,31 +1,17 @@
 import Image from 'next/image'
 import styles from './page.module.css'
-import { TodoUseCaseInteractor } from '@/todo/todo.use-case';
-import { TodoController } from '@/todo/todo.controller';
-import { TodoPresenter } from '@/todo/todo.presenter';
 import { revalidatePath } from 'next/cache'
 import { Todo } from '@/todo/todo.entity';
-import { TodoFilePersistence } from '@/todo/todo.persistence';
-
-const todoUseCaseInteractor = new TodoUseCaseInteractor(new TodoFilePersistence());
-const todoController = new TodoController(todoUseCaseInteractor);
-const todoPresenter = new TodoPresenter(todoUseCaseInteractor);
-
+import { AddTodo } from './AddTodo';
+import { todoController, todoPresenter } from './interfaceAdapters';
 
 const TodoLi = ({todo, deleteTodo}: {todo: Todo, deleteTodo: (formData: FormData) => Promise<void>}) => {
   return (<li key={todo.id}>
-    {todo.desc} <form action={deleteTodo}><input name="id" value={todo.id} hidden /><button>delete</button></form>
+    {todo.desc} <form action={deleteTodo}><input name="id" defaultValue={todo.id} hidden /><button>delete</button></form>
   </li>)
 }
 
-export default function Home() {
-  async function addTodo(data: FormData) {
-    'use server'
-    const desc = data.get('desc')?.toString() || ''
-    todoController.saveTodo(desc);
-    revalidatePath('/todo')
-  }
-
+export default async function Home() {
   async function deleteTodo(data: FormData) {
     'use server'
     const id = data.get('id')?.toString() || ''
@@ -33,7 +19,7 @@ export default function Home() {
     revalidatePath('/todo')
   }
 
-  const todos = todoPresenter.getTodos();
+  const todos = await todoPresenter.getTodos();
 
   return (
     <main>
@@ -43,10 +29,7 @@ export default function Home() {
           return <TodoLi todo={todo} key={todo.id} deleteTodo={deleteTodo} />
         })}
       </ul>
-      <form action={addTodo}>
-        <input name='desc' />
-        <button>add todo</button>
-      </form>
+      <AddTodo />
     </main>
   )
 }
