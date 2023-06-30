@@ -1,8 +1,8 @@
 import { Todo } from "./todo.entity";
-import { ITodoPersistence } from "./todo.use-case";
+import { TodoGateway } from "./todo.use-case";
 import fs from 'fs';
 
-export class TodoFilePersistence implements ITodoPersistence {
+export class TodoFileGateway implements TodoGateway {
   async storeTodos(todos: Todo[]) {
     fs.writeFileSync('data/todos.json', JSON.stringify(todos, null, 4));
   }

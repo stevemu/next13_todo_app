@@ -9,13 +9,13 @@ export interface TodoUseCaseInputPort {
   deleteTodo: (id: number) => Promise<void>;
 }
 
-export interface ITodoPersistence {
+export interface TodoGateway {
   storeTodos: (todos: Todo[]) => Promise<void>;
   getTodos: () => Promise<Todo[]>;
 }
 
 export class TodoUseCaseInteractor implements TodoUseCaseInputPort, TodoUseCaseOutputPort {
-  constructor(private todoPersistence: ITodoPersistence) {}
+  constructor(private todoPersistence: TodoGateway) {}
 
   async addTodo(desc: string) {
     const todo = new Todo(Math.random(), desc);
