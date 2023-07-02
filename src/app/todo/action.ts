@@ -3,8 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { todoController } from './interfaceAdapters';
 
-export async function addTodo(data: FormData) {
-  const desc = data.get('desc')?.toString() || ''
+export async function addTodo(desc: string) {
   await todoController.saveTodo(desc);
   revalidatePath('/todo')
 }
